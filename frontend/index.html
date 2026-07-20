@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Intelligent Maze Navigation System</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero-panel">
+        <div class="hero-copy">
+          <p class="eyebrow">AI Search Visualization Platform</p>
+          <h1>Intelligent Maze Navigation System</h1>
+          <p class="hero-description">
+            Explore how A*, BFS, DFS, and Greedy Best-First Search navigate a
+            state-space maze using graph search, heuristics, and closed-list
+            optimization.
+          </p>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-label">Primary Agent</span>
+            <strong>Goal-Based Agent</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Heuristic</span>
+            <strong>Manhattan Distance</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">Search Model</span>
+            <strong>Graph Search</strong>
+          </div>
+        </div>
+      </header>
+
+      <main class="dashboard">
+        <section class="control-panel glass-panel">
+          <div class="panel-heading">
+            <h2>Simulation Controls</h2>
+            <p>
+              Generate, edit, upload, solve, and compare maze search strategies.
+            </p>
+          </div>
+
+          <div class="control-grid">
+            <label class="field-group">
+              <span>Algorithm</span>
+              <select id="algorithmSelect">
+                <option value="astar">A* Search</option>
+                <option value="bfs">Breadth-First Search</option>
+                <option value="dfs">Depth-First Search</option>
+                <option value="greedy">Greedy Best-First Search</option>
+              </select>
+            </label>
+
+            <label class="field-group">
+              <span>Rows</span>
+              <input
+                id="rowsInput"
+                type="number"
+                min="7"
+                max="61"
+                step="2"
+                value="21"
+              />
+            </label>
+
+            <label class="field-group">
+              <span>Columns</span>
+              <input
+                id="colsInput"
+                type="number"
+                min="7"
+                max="61"
+                step="2"
+                value="21"
+              />
+            </label>
+
+            <label class="field-group">
+              <span>Animation Speed</span>
+              <div class="range-group">
+                <input
+                  id="speedInput"
+                  type="range"
+                  min="5"
+                  max="120"
+                  value="35"
+                />
+                <strong id="speedValue">35 ms</strong>
+              </div>
+            </label>
+          </div>
+
+          <div class="button-row">
+            <button id="generateBtn" class="primary-btn">Generate Maze</button>
+            <button id="solveBtn" class="secondary-btn">Solve Maze</button>
+            <button id="compareBtn" class="secondary-btn">
+              Compare Algorithms
+            </button>
+            <button id="resetBtn" class="ghost-btn">Restart</button>
+          </div>
+
+          <div class="button-row compact-row">
+            <button id="modeWallBtn" class="chip-btn active">Edit Walls</button>
+            <button id="modeStartBtn" class="chip-btn">Place Start</button>
+            <button id="modeGoalBtn" class="chip-btn">Place Goal</button>
+            <label class="upload-btn">
+              <input id="mazeUploadInput" type="file" accept=".txt,.json" />
+              Upload Custom Maze
+            </label>
+          </div>
+
+          <div class="legend">
+            <div class="legend-item">
+              <span class="legend-swatch wall"></span>Wall
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch open"></span>Open Cell
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch start"></span>Start
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch goal"></span>Goal
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch explored"></span>Explored
+            </div>
+            <div class="legend-item">
+              <span class="legend-swatch path"></span>Shortest Path
+            </div>
+          </div>
+
+          <div class="status-panel">
+            <p id="statusText">
+              Ready. Generate a maze or upload your own grid.
+            </p>
+          </div>
+        </section>
+
+        <section class="visualization-panel glass-panel">
+          <div class="panel-heading">
+            <h2>Interactive Maze Grid</h2>
+            <p>
+              Click cells to edit the maze, then watch the search process expand
+              node by node.
+            </p>
+          </div>
+          <div
+            id="mazeGrid"
+            class="maze-grid"
+            aria-label="Maze visualization grid"
+          ></div>
+        </section>
+
+        <section class="metrics-panel glass-panel">
+          <div class="panel-heading">
+            <h2>Algorithm Metrics</h2>
+            <p>Key performance values for the active search run.</p>
+          </div>
+          <div id="metricsGrid" class="metrics-grid">
+            <article class="metric-card">
+              <span>Path Cost</span>
+              <strong id="metricPathCost">-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Expanded Nodes</span>
+              <strong id="metricExpanded">-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Execution Time</span>
+              <strong id="metricTime">-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Peak Memory</span>
+              <strong id="metricMemory">-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Generated Nodes</span>
+              <strong id="metricGenerated">-</strong>
+            </article>
+            <article class="metric-card">
+              <span>Frontier Peak</span>
+              <strong id="metricFrontier">-</strong>
+            </article>
+          </div>
+        </section>
+
+        <section class="comparison-panel glass-panel">
+          <div class="panel-heading">
+            <h2>Comparison Results</h2>
+            <p>
+              Run all algorithms on the same maze and replay any result by
+              clicking its card.
+            </p>
+          </div>
+          <div id="comparisonResults" class="comparison-results empty-state">
+            Comparison results will appear here after running the compare
+            action.
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
